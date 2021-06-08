@@ -100,6 +100,7 @@ const Centers = () => {
               }}
             >
               <a
+                className="App-link"
                 onClick={() => {
                   open(center.hsaid);
                 }}
@@ -107,6 +108,15 @@ const Centers = () => {
                 {center.title}
               </a>
               <p>Timeslots: {center.timeslots}</p>
+              <p>
+                <a
+                  href={center.urlBooking}
+                  target="_blank"
+                  rel="noopener noreferer"
+                >
+                  Bookings
+                </a>
+              </p>
             </li>
           );
         })}

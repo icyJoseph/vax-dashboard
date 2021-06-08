@@ -1,11 +1,14 @@
 .App-header {
   background-color: #282c34;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   color: white;
   padding: 0.5rem 1rem;
   flex: 0 1 3rem;
+}
+
+.App-header h1 {
+  margin-bottom: 0.25rem;
 }
 
 .App-main {
@@ -13,5 +16,6 @@
 }
 
 .App-link {
-  color: #61dafb;
+  /* color: #61dafb; */
+  cursor: pointer;
 }
