@@ -1,134 +1,10 @@
 import "./App.css";
 import "@reach/dialog/styles.css";
-import React, { Fragment, useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
-import axios from "axios";
-import type { getTestCenters, getTestCenterInformation } from "civic-api";
-import { Dialog } from "@reach/dialog";
-import VisuallyHidden from "@reach/visually-hidden";
 
-type Await<T> = T extends {
-  // eslint-disable-next-line
-  then(onfulfilled?: (value: infer U) => unknown): unknown;
-}
-  ? U
-  : T;
+import React, { Fragment } from "react";
+import { Dashboard } from "./components/Dashboard";
 
-type Results = Await<ReturnType<typeof getTestCenters>>;
-type TestCenterInfo = Await<ReturnType<typeof getTestCenterInformation>>;
-
-const fetchCenter = (hsaid: string | null): Promise<TestCenterInfo> =>
-  axios.get(`/api/get_by_hsaid?hsaid=${hsaid}`).then(({ data }) => data);
-
-const Center = ({ selected }: { selected: string }) => {
-  const { data, status } = useQuery(
-    ["centers", selected],
-    () => fetchCenter(selected),
-    { enabled: !!selected }
-  );
-
-  if (status === "loading") return <div>Loading...</div>;
-  console.log(data);
-
-  return (
-    <div>
-      <h3>{data?.results?.[0].namn}</h3>
-      <h4>{data?.results?.[0].foretag}</h4>
-      <address>
-        {data?.results?.[0].postnummer} {data?.results?.[0].postort}
-      </address>
-      <figure>
-        <figcaption>Coordinates</figcaption>
-        <pre>
-          x: {data?.results?.[0].xkoord} y: {data?.results?.[0].ykoord}
-        </pre>
-      </figure>
-    </div>
-  );
-};
-
-const Modal = ({
-  selected,
-  close
-}: {
-  selected: string | null;
-  close: () => void;
-}) => {
-  const open = !!selected;
-
-  return (
-    <Dialog isOpen={open} onDismiss={close} aria-label="Vaccination Center">
-      <button className="close-button" onClick={close}>
-        <VisuallyHidden>Close</VisuallyHidden>
-        <span aria-hidden>×</span>
-      </button>
-      {selected && <Center selected={selected} />}
-    </Dialog>
-  );
-};
-
-const Centers = () => {
-  const { data: centers, status } = useQuery<Results>(["centers"], () =>
-    axios.get("/api/get_all").then(({ data }) => data)
-  );
-
-  const client = useQueryClient();
-
-  const [selected, setSelected] = useState<string | null>(null);
-  const open = (id: string) => setSelected(id);
-  const close = () => setSelected(null);
-
-  if (status === "loading") return <div>Loading...</div>;
-  if (status === "error") return <div>Something went wrong</div>;
-
-  return (
-    <Fragment>
-      <Modal selected={selected} close={close} />
-      <ul>
-        {centers?.testcenters.map((center) => {
-          return (
-            <li
-              key={center.hsaid}
-              onMouseEnter={() => {
-                client.prefetchQuery(
-                  ["centers", center.hsaid],
-                  () => fetchCenter(center.hsaid),
-                  {
-                    staleTime: Infinity
-                  }
-                );
-              }}
-            >
-              <h2>{center.title}</h2>
-              <p>Timeslots: {center.timeslots}</p>
-              <p>
-                <a
-                  className="App-link"
-                  onClick={() => {
-                    open(center.hsaid);
-                  }}
-                >
-                  Address
-                </a>
-              </p>
-              <p>
-                <a
-                  href={center.urlBooking}
-                  target="_blank"
-                  rel="noopener noreferer"
-                >
-                  Bookings
-                </a>
-              </p>
-            </li>
-          );
-        })}
-      </ul>
-    </Fragment>
-  );
-};
-
-function App() {
+export function App() {
   return (
     <Fragment>
       <header className="App-header">
@@ -136,10 +12,8 @@ function App() {
         <p>Vaccination centers</p>
       </header>
       <main className="App-main">
-        <Centers />
+        <Dashboard />
       </main>
     </Fragment>
   );
 }
-
-export default App;
