@@ -21,6 +21,16 @@
   text-decoration: underline;
 }
 
+.App-controls {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.App-controls button:not(:first-child) {
+  margin-left: 1rem;
+}
+
 .App-link:hover {
   color: #61dafb;
 }

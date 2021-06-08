@@ -21,7 +21,7 @@ const fetchGeoInfo = (hsaid: string | null): Promise<TestCenterInfo> =>
 
 const GeoInfo = ({ selected }: { selected: string }) => {
   const { data, status } = useQuery(
-    ["centers", selected],
+    ["geo", selected],
     () => fetchGeoInfo(selected),
     { enabled: !!selected }
   );
@@ -69,11 +69,13 @@ const GeoModal = ({
 };
 
 export const Dashboard = () => {
-  const { data, status } = useQuery<Results>(["centers"], () =>
+  const { data, status, isFetching } = useQuery<Results>(["centers"], () =>
     axios.get("/api/get_all").then(({ data }) => data)
   );
 
   const client = useQueryClient();
+
+  const revalidate = () => client.invalidateQueries(["centers"]);
 
   const [selected, setSelected] = useState<string | null>(null);
   const open = (id: string) => setSelected(id);
@@ -86,7 +88,12 @@ export const Dashboard = () => {
 
   return (
     <Fragment>
-      <button onClick={toggle}>{hide ? "Show All" : "Hide Empty"}</button>
+      <div className="App-controls">
+        <button onClick={toggle}>{hide ? "Show All" : "Hide Empty"}</button>
+        <button onClick={revalidate}>
+          {isFetching ? "Loading" : "Refresh"}
+        </button>
+      </div>
       <GeoModal selected={selected} close={close} />
       <ul>
         {data?.testcenters
@@ -102,7 +109,7 @@ export const Dashboard = () => {
                 key={center.hsaid}
                 onMouseEnter={() => {
                   client.prefetchQuery(
-                    ["centers", center.hsaid],
+                    ["geo", center.hsaid],
                     () => fetchGeoInfo(center.hsaid),
                     {
                       staleTime: Infinity
