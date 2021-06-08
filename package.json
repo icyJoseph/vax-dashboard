@@ -1,11 +1,13 @@
 {
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port $PORT",
     "build": "tsc && vite build",
     "serve": "vite preview"
   },
   "dependencies": {
+    "@reach/dialog": "^0.15.0",
+    "@reach/visually-hidden": "^0.15.0",
     "axios": "^0.21.1",
     "civic-api": "^0.1.8",
     "react": "^17.0.0",

@@ -11,7 +11,14 @@ async function get_all(req: VercelRequest, res: VercelResponse) {
 
       const result = await getTestCenters(2, "production", false);
 
-      return res.send(result);
+      const sorted = {
+        ...result,
+        testCenters: result.testcenters.sort(
+          (a, b) => b.timeslots - a.timeslots
+        )
+      };
+
+      return res.send(sorted);
     } else {
       return res.send(401);
     }
