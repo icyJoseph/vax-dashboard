@@ -29,6 +29,8 @@ const GeoInfo = ({ selected }: { selected: string }) => {
   if (status === "loading") return <div>Loading...</div>;
   if (status === "error") return <div>Error getting info</div>;
 
+  if (data?.results?.length === 0) return <div>No data available</div>;
+
   return (
     <div>
       <h3>{data?.results?.[0].namn}</h3>
