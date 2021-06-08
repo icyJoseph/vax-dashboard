@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useReducer, useState } from "react";
 import axios from "axios";
 
 import { useQuery, useQueryClient } from "react-query";
@@ -79,51 +79,64 @@ export const Dashboard = () => {
   const open = (id: string) => setSelected(id);
   const close = () => setSelected(null);
 
+  const [hide, toggle] = useReducer((x) => !x, true);
+
   if (status === "loading") return <div>Loading...</div>;
   if (status === "error") return <div>Something went wrong</div>;
 
   return (
     <Fragment>
+      <button onClick={toggle}>{hide ? "Show All" : "Hide Empty"}</button>
       <GeoModal selected={selected} close={close} />
       <ul>
-        {data?.testcenters.map((center) => {
-          return (
-            <li
-              key={center.hsaid}
-              onMouseEnter={() => {
-                client.prefetchQuery(
-                  ["centers", center.hsaid],
-                  () => fetchGeoInfo(center.hsaid),
-                  {
-                    staleTime: Infinity
-                  }
-                );
-              }}
-            >
-              <h2>{center.title}</h2>
-              <p>Timeslots: {center.timeslots}</p>
-              <p>
-                <a
-                  className="App-link"
-                  onClick={() => {
-                    open(center.hsaid);
-                  }}
-                >
-                  Address
-                </a>
-              </p>
-              <p>
-                <a
-                  href={center.urlBooking}
-                  target="_blank"
-                  rel="noopener noreferer"
-                >
-                  Bookings
-                </a>
-              </p>
-            </li>
-          );
-        })}
+        {data?.testcenters
+          .filter((center) => {
+            if (hide) {
+              return center.timeslots > 0;
+            }
+            return center;
+          })
+          .map((center) => {
+            return (
+              <li
+                key={center.hsaid}
+                onMouseEnter={() => {
+                  client.prefetchQuery(
+                    ["centers", center.hsaid],
+                    () => fetchGeoInfo(center.hsaid),
+                    {
+                      staleTime: Infinity
+                    }
+                  );
+                }}
+              >
+                <h2>{center.title}</h2>
+                <p>Timeslots: {center.timeslots}</p>
+                <time dateTime={new Date(center.updated).toISOString()}>
+                  Updated {center.updated}
+                </time>
+                <p>
+                  <a
+                    className="App-link"
+                    onClick={() => {
+                      open(center.hsaid);
+                    }}
+                  >
+                    Address
+                  </a>
+                </p>
+                <p>
+                  <a
+                    href={center.urlBooking}
+                    target="_blank"
+                    rel="noopener noreferer"
+                  >
+                    Bookings
+                  </a>
+                </p>
+              </li>
+            );
+          })}
       </ul>
     </Fragment>
   );
