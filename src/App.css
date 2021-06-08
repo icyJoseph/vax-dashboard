@@ -16,6 +16,10 @@
 }
 
 .App-link {
-  /* color: #61dafb; */
   cursor: pointer;
+  text-decoration: underline;
+}
+
+.App-link:hover {
+  color: #61dafb;
 }

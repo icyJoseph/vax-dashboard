@@ -32,8 +32,8 @@ const Center = ({ selected }: { selected: string }) => {
 
   return (
     <div>
-      <h2>{data?.results?.[0].namn}</h2>
-      <h3>{data?.results?.[0].foretag}</h3>
+      <h3>{data?.results?.[0].namn}</h3>
+      <h4>{data?.results?.[0].foretag}</h4>
       <address>
         {data?.results?.[0].postnummer} {data?.results?.[0].postort}
       </address>
@@ -99,15 +99,18 @@ const Centers = () => {
                 );
               }}
             >
-              <a
-                className="App-link"
-                onClick={() => {
-                  open(center.hsaid);
-                }}
-              >
-                {center.title}
-              </a>
+              <h2>{center.title}</h2>
               <p>Timeslots: {center.timeslots}</p>
+              <p>
+                <a
+                  className="App-link"
+                  onClick={() => {
+                    open(center.hsaid);
+                  }}
+                >
+                  Address
+                </a>
+              </p>
               <p>
                 <a
                   href={center.urlBooking}
