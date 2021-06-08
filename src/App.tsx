@@ -94,7 +94,7 @@ const Centers = () => {
                   ["centers", center.hsaid],
                   () => fetchCenter(center.hsaid),
                   {
-                    staleTime: 60 * 60 * 1000
+                    staleTime: Infinity
                   }
                 );
               }}
